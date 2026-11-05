@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types src/lib/sharing.test.ts",
+    "check": "npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
     "framer-motion": "^14.9.1",

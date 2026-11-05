@@ -1,1 +1,0 @@
-phase 5: features (verified 5.1-5.4 already in place — official YouTube IFrame API, watch links, thumbnails, "via YouTube" attribution)

@@ -1,4 +1,4 @@
-import { SHARE_MESSAGE } from "./constants";
+import { SHARE_MESSAGE } from "./constants.ts";
 
 /** Returns a safe absolute URL for sharing. Never invents a production URL. */
 export function getShareUrl(): string {
