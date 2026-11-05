@@ -1,1 +1,1 @@
-phase 3: accessibility (focus-visible ring, labels, live regions, semantic landmarks)
+phase 4: config & SEO (drop redundant turbopack CSS rule, canonical/robots/sitemap, semantic landmarks)
