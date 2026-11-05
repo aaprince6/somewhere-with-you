@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -48,7 +48,7 @@ function fmt(t: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function MusicPlayer(props: Props) {
+export const MusicPlayer = React.memo(function MusicPlayer(props: Props) {
   const {
     trackIndex,
     isPlaying,
@@ -336,4 +336,4 @@ export function MusicPlayer(props: Props) {
       </div>
     </div>
   );
-}
+});

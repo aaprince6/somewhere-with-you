@@ -223,6 +223,15 @@ function CinemaPage({ controls, hiddenHost }: { controls: Controls; hiddenHost?:
     void c.play(n);
   }, []);
 
+  const onSelectTrack = useCallback(
+    (i: number) => {
+      void controlsRef.current.play(i);
+    },
+    []
+  );
+
+  const closeShare = useCallback(() => setShareOpen(false), []);
+
   return (
     <main
       onPointerMove={onPointerMove}
@@ -409,14 +418,14 @@ function CinemaPage({ controls, hiddenHost }: { controls: Controls; hiddenHost?:
             onSeek={controls.seek}
             onVolume={handleUserVolume}
             onMute={handleUserMute}
-            onSelect={(i) => void controls.play(i)}
+            onSelect={onSelectTrack}
             queueOpen={queueOpen}
             onQueueChange={setQueueOpen}
           />
         </>
       )}
 
-      <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} />
+      <ShareModal open={shareOpen} onClose={closeShare} />
 
       {/* Entrance overlay — sync crossfade with the hero (no black dip) */}
       <AnimatePresence>

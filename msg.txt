@@ -1,1 +1,1 @@
-phase 1: correctness (auto-skip, module-scope ids, sanitizer, focus trap, useSyncExternalStore)
+phase 2: performance (React.memo on MusicPlayer, stable callbacks, module-scope ids)
