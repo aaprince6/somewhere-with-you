@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #17251c;
+  --color-deep: #101a14;
+  --color-amber-glow: #e9a85d;
+  --color-cream: #f5ebdd;
+  --color-olive: #85866b;
+  --color-softblack: #111510;
+
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+:root {
+  --background: #101a14;
+  --foreground: #f5ebdd;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  height: 100%;
+  background: #101a14;
+  color: #f5ebdd;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* ---------- Cinematic helpers ---------- */
+
+.cinematic-vignette::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 42%,
+    rgba(10, 14, 11, 0.38) 74%,
+    rgba(8, 11, 9, 0.72) 100%
+  );
+}
+
+.film-grain::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain-shift 0.9s steps(4) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film-grain::before {
+    animation: none;
+  }
+  .kenburns,
+  .drift,
+  .float-dust,
+  .sun-pulse,
+  .grass-sway {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@keyframes grain-shift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2%, 3%); }
+  50% { transform: translate(3%, -2%); }
+  75% { transform: translate(-3%, -3%); }
+  100% { transform: translate(2%, 2%); }
+}
+
+@keyframes kenburns {
+  0% { transform: scale(1) translateY(0); }
+  100% { transform: scale(1.12) translateY(-1.5%); }
+}
+
+.kenburns {
+  animation: kenburns 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes sun-glow {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.06); }
+}
+
+.sun-pulse {
+  animation: sun-glow 9s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0% { transform: translate3d(-4%, 2%, 0); opacity: 0; }
+  15% { opacity: 0.7; }
+  85% { opacity: 0.7; }
+  100% { transform: translate3d(6%, -4%, 0); opacity: 0; }
+}
+
+.float-dust {
+  animation: drift linear infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes sway {
+  0%, 100% { transform: skewX(-1.2deg) translateX(0); }
+  50% { transform: skewX(1.4deg) translateX(6px); }
+}
+
+.grass-sway {
+  animation: sway 7s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Focus visibility */
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: 2px solid #e9a85d;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Custom range styling for progress + volume */
+input[type="range"].cinematic-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(245, 235, 221, 0.25);
+  cursor: pointer;
+}
+input[type="range"].cinematic-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #e9a85d;
+  border: none;
+  box-shadow: 0 0 12px rgba(233, 168, 93, 0.8);
+}
+input[type="range"].cinematic-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #e9a85d;
+  border: none;
+}
+
+/* Scroll snap container */
+.snap-cinema {
+  scroll-snap-type: y proximity;
+}
+.snap-cinema > section {
+  scroll-snap-align: start;
+}
+
+::selection {
+  background: rgba(233, 168, 93, 0.4);
+}
