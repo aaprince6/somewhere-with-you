@@ -88,11 +88,14 @@ export function MusicPlayer(props: Props) {
   });
   useEffect(() => {
     if (sleep === null) return;
+    // Defer the initial countdown write so it doesn't cascade-render.
     queueMicrotask(() => setSleepLeft(sleep * 60));
     const id = setInterval(() => {
       setSleepLeft((s) => {
         if (s <= 1) {
           clearInterval(id);
+          // Side effect must not live inside an updater (StrictMode may
+          // invoke it twice) — defer to the next tick.
           queueMicrotask(() => {
             setSleep(null);
             if (latestPlayback.current.isPlaying) void latestPlayback.current.onToggle();
@@ -309,7 +312,7 @@ export function MusicPlayer(props: Props) {
                   </button>
                 </li>
               ))}
-              <li className="px-4 py-3 text-[11px] leading-relaxed text-white/40">
+              <li className="px-4 py-3 text-[11px] leading-relaxed text-white/60">
                 {USE_YOUTUBE ? (
                   <>
                     Streams via official YouTube embeds ·{" "}

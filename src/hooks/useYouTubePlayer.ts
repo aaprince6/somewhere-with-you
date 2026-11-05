@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { PLAYLIST } from "@/lib/playlist";
+import { PLAYLIST, youtubeIds, hasYouTube } from "@/lib/playlist";
 import { loadYouTubeApi } from "@/lib/youtube";
 
 interface UseYouTubePlayerReturn {
@@ -48,6 +48,9 @@ export function useYouTubePlayer(): UseYouTubePlayerReturn {
   const primeState = useRef<"idle" | "priming" | "primed" | "consumed">("idle");
   const primedId = useRef<string | null>(null);
   const hasInteracted = useRef(false);
+  // Consecutive embed-error auto-skips: cap them so one broken playlist
+  // doesn't loop forever. Reset whenever a track actually plays.
+  const errorSkips = useRef(0);
 
   // Keep holder in sync outside render
   useEffect(() => {
@@ -57,9 +60,6 @@ export function useYouTubePlayer(): UseYouTubePlayerReturn {
   const mountNode = useCallback((el: HTMLDivElement | null) => {
     mountEl.current = el;
   }, []);
-
-  const youtubeIds = PLAYLIST.map((t) => t.youtubeId).filter(Boolean) as string[];
-  const hasYouTube = youtubeIds.length > 0;
 
   // Create player once
   useEffect(() => {
@@ -145,6 +145,7 @@ export function useYouTubePlayer(): UseYouTubePlayerReturn {
                 setIsLoading(false);
                 setError(null);
                 setHasAudio(true);
+                errorSkips.current = 0;
                 try {
                   setDuration(e.target.getDuration() || 0);
                 } catch {
@@ -195,9 +196,25 @@ export function useYouTubePlayer(): UseYouTubePlayerReturn {
               if (cancelled) return;
               setIsLoading(false);
               setIsPlaying(false);
-              setError(
-                "This YouTube song can't play here (owner disabled embedding or region-blocked). Tap Next, or replace the video ID in playlist.ts."
-              );
+              // Auto-skip past unplayable videos (embedding disabled,
+              // region-blocked) instead of stalling. Cap consecutive skips.
+              if (errorSkips.current < 5 && PLAYLIST.length > 1) {
+                errorSkips.current += 1;
+                const n = (indexHolder.current + 1) % PLAYLIST.length;
+                const id = PLAYLIST[n]?.youtubeId;
+                if (id) {
+                  setTrackIndex(n);
+                  try {
+                    playerRef.current?.loadVideoById(id);
+                  } catch {
+                    // ignore
+                  }
+                }
+              } else if (errorSkips.current >= 5) {
+                setError(
+                  "Several songs in a row can't play here (embedding disabled or region-blocked). Tap Next to try again."
+                );
+              }
             },
           },
         });
@@ -239,7 +256,6 @@ export function useYouTubePlayer(): UseYouTubePlayerReturn {
       }
       playerRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const play = useCallback(
@@ -391,8 +407,7 @@ export function useYouTubePlayer(): UseYouTubePlayerReturn {
         // ignore
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready]);
+  }, [ready, volume]);
 
   return {
     mountNode,

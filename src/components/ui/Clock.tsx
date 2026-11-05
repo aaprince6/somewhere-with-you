@@ -1,16 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
-/** Live clock in the style of the reference's top-right time readout. */
+/** Live clock in the style of the reference's top-right time readout.
+ *  `useSyncExternalStore` keeps SSR output stable ("--:--") with no
+ *  effect-driven setState and no hydration mismatch. */
+function subscribe(onChange: () => void) {
+  const id = setInterval(onChange, 1000);
+  return () => clearInterval(id);
+}
+
 export function Clock() {
-  const [now, setNow] = useState<Date | null>(null);
-
-  useEffect(() => {
-    queueMicrotask(() => setNow(new Date()));
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
+  const now = useSyncExternalStore(
+    subscribe,
+    () => new Date(),
+    () => null
+  );
 
   if (!now) {
     return (

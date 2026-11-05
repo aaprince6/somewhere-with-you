@@ -1445,3 +1445,11 @@ export const PLAYLIST: Track[] = [
     cover: "/images/meadow-couple-sunset.webp",
   },
 ];
+
+/** All YouTube video IDs in order — hoisted to module scope so callers don't
+ * rebuild the array every render. */
+export const youtubeIds: string[] = PLAYLIST.flatMap((t) =>
+  t.youtubeId ? [t.youtubeId] : []
+);
+
+export const hasYouTube = youtubeIds.length > 0;

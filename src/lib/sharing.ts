@@ -24,6 +24,20 @@ export function isValidShareUrl(url: string): boolean {
   }
 }
 
+/** Sanitise a dedication name from `?to=` or user input.
+ *
+ * Keeps Unicode letters (incl. accented / non-Latin), spaces, hyphen and
+ * apostrophe (incl. the typographic U+2019). Collapses internal whitespace
+ * and caps at 40 chars so it can never grow into a payload or an injection.
+ */
+export function sanitizeName(raw: string): string {
+  return (raw ?? "")
+    .replace(/[^\p{L}\p{M}\s'’-]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 40);
+}
+
 export type ShareOutcome = "native" | "whatsapp" | "copied" | "failed";
 
 export async function nativeShare(url: string): Promise<boolean> {

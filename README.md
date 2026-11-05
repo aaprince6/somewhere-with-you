@@ -24,8 +24,8 @@ Original AI-generated scenes ship in `public/images/`:
 To replace:
 
 1. Export 16:9 WebP or AVIF (e.g. 1920×1080 desktop, ~200–400 KB).
-2. Keep the same filenames, or update `IntroScene.tsx`, `MainScene.tsx`,
-   `FinalScene.tsx` and `layout.tsx` OG metadata.
+2. Keep the same filenames, or update `IntroScene.tsx`, `page.tsx`,
+   `layout.tsx` OG metadata.
 3. Test crops at 360, 390, 768, 1024, 1440 px — `object-cover` handles
    portrait phones automatically.
 4. Keep alt text meaningful (couple, meadow, sunset).

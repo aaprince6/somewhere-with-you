@@ -111,6 +111,8 @@ export function useAudioPlayer(autoStart = false): UseAudioPlayerReturn {
 
     audio.src = track.src;
 
+    // State resets are deferred: they are derived from the track change but
+    // must not cascade-render synchronously inside the effect body.
     queueMicrotask(() => {
       setIsLoading(true);
       setProgress(0);
@@ -124,14 +126,10 @@ export function useAudioPlayer(autoStart = false): UseAudioPlayerReturn {
         .then(() => {
           setHasAudio(true);
         })
-        .catch((e) => {
-          // Autoplay blocked or file missing — surface calmly
+        .catch(() => {
+          // Autoplay blocked or file missing — onError surfaces the real cause
           setIsLoading(false);
           setIsPlaying(false);
-          if (e?.name !== "NotAllowedError") {
-            // File-level failure will also fire onError; keep message gentle
-            setError((prev) => prev);
-          }
         });
     } else {
       queueMicrotask(() => setIsLoading(false));
@@ -168,24 +166,17 @@ export function useAudioPlayer(autoStart = false): UseAudioPlayerReturn {
 
   const next = useCallback(async () => {
     const n = (currentIndex + 1) % PLAYLIST.length;
-    pendingIndex.current = isPlaying || pendingIndex.current !== null ? n : null;
-    // If paused, just switch track without autoplay
-    if (!isPlaying && pendingIndex.current === null) {
+    if (isPlaying) {
+      pendingIndex.current = n;
       setCurrentIndex(n);
-      return;
+    } else {
+      setCurrentIndex(n);
     }
-    setCurrentIndex(n);
-    // playback kicked by effect via pendingIndex
-    if (!isPlaying) await play(n);
-  }, [currentIndex, isPlaying, play]);
+  }, [currentIndex, isPlaying]);
 
   const prev = useCallback(async () => {
     const p = (currentIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
-    if (!isPlaying) {
-      setCurrentIndex(p);
-      return;
-    }
-    pendingIndex.current = p;
+    if (isPlaying) pendingIndex.current = p;
     setCurrentIndex(p);
   }, [currentIndex, isPlaying]);
 

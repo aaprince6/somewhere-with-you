@@ -1,6 +1,4 @@
 "use client";
-/* eslint-disable react-hooks/refs -- false positive: `yt.*` / `controls.*` are state values.
-   Real refs (mountEl, playerRef, indexHolder) are only touched inside effects and callbacks. */
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
@@ -16,6 +14,7 @@ import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { useYouTubePlayer } from "@/hooks/useYouTubePlayer";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { PLAYLIST, USE_YOUTUBE } from "@/lib/playlist";
+import { sanitizeName } from "@/lib/sharing";
 import { BRAND, ROMANTIC_MESSAGES } from "@/lib/constants";
 
 interface Controls {
@@ -56,11 +55,13 @@ function CinemaPage({ controls, hiddenHost }: { controls: Controls; hiddenHost?:
   });
 
   // Personal dedication (?to=Name) — read once from the URL, sanitized.
+  // In an effect (not a lazy initializer) so SSR HTML and first client render
+  // agree and hydration doesn't mismatch. The state write is deferred.
   useEffect(() => {
     queueMicrotask(() => {
       try {
-        const v = new URLSearchParams(window.location.search).get("to")?.trim() ?? "";
-        const clean = v.replace(/[<>&"']/g, "").slice(0, 40);
+        const v = new URLSearchParams(window.location.search).get("to") ?? "";
+        const clean = sanitizeName(v);
         if (clean) setDedicatedTo(clean);
       } catch {
         // ignore malformed URLs
@@ -275,6 +276,7 @@ function CinemaPage({ controls, hiddenHost }: { controls: Controls; hiddenHost?:
       {/* Center hero — inert until entered so invisible buttons can't be clicked */}
       <div
         aria-hidden={!entered}
+        inert={!entered}
         className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-6 pb-24 text-center"
       >
         <motion.p
@@ -382,7 +384,7 @@ function CinemaPage({ controls, hiddenHost }: { controls: Controls; hiddenHost?:
         <>
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 bottom-2 z-10 hidden justify-center gap-5 text-[10px] font-bold uppercase tracking-[0.25em] text-[#F5EBDD]/55 md:flex"
+            className="absolute inset-x-0 bottom-2 z-10 hidden justify-center gap-5 text-[10px] font-bold uppercase tracking-[0.25em] text-[#F5EBDD]/60 md:flex"
           >
             <span><Kbd>Space</Kbd> play / pause</span>
             <span><Kbd>←</Kbd><Kbd>→</Kbd> seek</span>
@@ -438,13 +440,17 @@ function FileExperience() {
 }
 
 function YouTubeExperience() {
-  const yt = useYouTubePlayer();
+  // Destructure the ref-callback out of the hook return so the rule's
+  // heuristic (which treats the whole return as ref-like) doesn't flag the
+  // plain controls prop. `mountNode` is a stable callback ref — safe to pass
+  // to a DOM element; it is never read for rendering.
+  const { mountNode, ...controls } = useYouTubePlayer();
   return (
     <CinemaPage
-      controls={yt}
+      controls={controls}
       hiddenHost={
         <div aria-hidden="true" className="pointer-events-none absolute h-[4px] w-[4px] overflow-hidden opacity-0">
-          <div id="yt-hidden-audio-host" ref={yt.mountNode} />
+          <div id="yt-hidden-audio-host" ref={mountNode} />
         </div>
       }
     />
