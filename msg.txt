@@ -1,1 +1,1 @@
-phase 2: performance (React.memo on MusicPlayer, stable callbacks, module-scope ids)
+phase 3: accessibility (focus-visible ring, labels, live regions, semantic landmarks)

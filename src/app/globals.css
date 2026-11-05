@@ -29,6 +29,14 @@ body {
   overflow-x: hidden;
 }
 
+/* Visible focus ring for keyboard users — the cinematic UI otherwise has no
+ * focus styling at all, which makes it invisible to screen-reader users. */
+:focus-visible {
+  outline: 2px solid #e9a85d;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
