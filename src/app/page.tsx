@@ -42,6 +42,9 @@ function CinemaPage({ controls, hiddenHost }: { controls: Controls; hiddenHost?:
   const [entered, setEntered] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [messageIndex, setMessageIndex] = useState(0);
+  // Ref for the Share button so focus returns there when the modal closes,
+  // instead of falling back to whatever element happened to be active.
+  const shareTriggerRef = useRef<HTMLButtonElement | null>(null);
 
   const [queueOpen, setQueueOpen] = useState(false);
   const [dedicatedTo, setDedicatedTo] = useState<string | null>(null);
@@ -379,6 +382,7 @@ function CinemaPage({ controls, hiddenHost }: { controls: Controls; hiddenHost?:
           </button>
           <button
             type="button"
+            ref={shareTriggerRef}
             onClick={() => setShareOpen(true)}
             className="inline-flex items-center gap-2 rounded-full bg-[#E9A85D] px-6 py-3 text-[12px] font-bold uppercase tracking-[0.22em] text-[#101A14] shadow-[0_8px_40px_rgba(233,168,93,0.35)] transition-colors hover:bg-[#F5EBDD]"
           >
@@ -425,7 +429,7 @@ function CinemaPage({ controls, hiddenHost }: { controls: Controls; hiddenHost?:
         </>
       )}
 
-      <ShareModal open={shareOpen} onClose={closeShare} />
+      <ShareModal open={shareOpen} onClose={closeShare} triggerRef={shareTriggerRef} />
 
       {/* Entrance overlay — sync crossfade with the hero (no black dip) */}
       <AnimatePresence>

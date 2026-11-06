@@ -16,8 +16,10 @@ const inter = Inter({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-const metadataBase = siteUrl ? new URL(siteUrl) : undefined;
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.trim() ??
+  "https://somewhere-with-you.example";
+const metadataBase = new URL(siteUrl);
 
 export const metadata: Metadata = {
   metadataBase,
