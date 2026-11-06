@@ -431,6 +431,33 @@ function CinemaPage({ controls, hiddenHost }: { controls: Controls; hiddenHost?:
 
       <ShareModal open={shareOpen} onClose={closeShare} triggerRef={shareTriggerRef} />
 
+      {/* Credit */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-2 pb-3 pt-10 text-center">
+        <a
+          href="https://portfolio-sand-sigma-94.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Visit the maker's portfolio (opens in a new tab)"
+          className="pointer-events-auto group inline-flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-black/30 p-2 backdrop-blur transition-colors hover:border-[#E9A85D]/60"
+        >
+          <Image
+            src="/images/contact me.gif"
+            alt=""
+            aria-hidden="true"
+            unoptimized
+            className="h-20 w-20 rounded-xl object-cover"
+            width="80"
+            height="80"
+          />
+          <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#E9A85D] transition-colors group-hover:text-[#F5EBDD]">
+            Contact me
+          </span>
+        </a>
+        <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-[#F5EBDD]/50">
+          MADE BY ©Åĺăhâşäņ
+        </p>
+      </div>
+
       {/* Entrance overlay — sync crossfade with the hero (no black dip) */}
       <AnimatePresence>
         {!entered && <IntroScene key="intro" onEnter={handleEnter} />}
