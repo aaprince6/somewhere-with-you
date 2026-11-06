@@ -4,18 +4,31 @@ import { useSyncExternalStore } from "react";
 
 /** Live clock in the style of the reference's top-right time readout.
  *  `useSyncExternalStore` keeps SSR output stable ("--:--") with no
- *  effect-driven setState and no hydration mismatch. */
+ *  effect-driven setState and no hydration mismatch. The snapshot is cached
+ *  at module scope and only mutated inside the subscribe callback, so
+ *  `getSnapshot` always returns the same object between ticks — otherwise
+ *  React sees a "store changed" on every render and loops forever.
+ */
+let cachedNow: Date | null = null;
+
 function subscribe(onChange: () => void) {
-  const id = setInterval(onChange, 1000);
+  const id = setInterval(() => {
+    cachedNow = new Date();
+    onChange();
+  }, 1000);
   return () => clearInterval(id);
 }
 
+function getSnapshot(): Date | null {
+  return cachedNow;
+}
+
+function getServerSnapshot(): null {
+  return null;
+}
+
 export function Clock() {
-  const now = useSyncExternalStore(
-    subscribe,
-    () => new Date(),
-    () => null
-  );
+  const now = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   if (!now) {
     return (
