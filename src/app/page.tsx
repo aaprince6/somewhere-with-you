@@ -432,7 +432,7 @@ function CinemaPage({ controls, hiddenHost }: { controls: Controls; hiddenHost?:
       <ShareModal open={shareOpen} onClose={closeShare} triggerRef={shareTriggerRef} />
 
       {/* Credit */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-2 pb-3 pt-10 text-center">
+      <div className="pointer-events-none absolute right-3 bottom-3 z-10 flex flex-col items-end gap-2 text-right">
         <a
           href="https://portfolio-sand-sigma-94.vercel.app/"
           target="_blank"
