@@ -3,55 +3,6 @@
  * No API key needed for embedded playback.
  */
 
-export function parsePlaylistId(url: string): string | null {
-  try {
-    const u = new URL(url);
-    const list = u.searchParams.get("list");
-    if (list && /^[A-Za-z0-9_-]{10,}$/.test(list)) return list;
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export function parseVideoId(url: string): string | null {
-  try {
-    const trimmed = url.trim();
-    // Bare 11-char ID
-    if (/^[A-Za-z0-9_-]{11}$/.test(trimmed)) return trimmed;
-    const u = new URL(trimmed);
-    if (u.hostname.includes("youtu.be")) {
-      const id = u.pathname.slice(1).split("/")[0];
-      return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null;
-    }
-    if (u.hostname.includes("youtube.com")) {
-      const v = u.searchParams.get("v");
-      if (v && /^[A-Za-z0-9_-]{11}$/.test(v)) return v;
-      const parts = u.pathname.split("/").filter(Boolean);
-      // /embed/ID, /shorts/ID, /live/ID
-      const idx = parts.findIndex((p) => ["embed", "shorts", "live"].includes(p));
-      if (idx >= 0 && parts[idx + 1] && /^[A-Za-z0-9_-]{11}$/.test(parts[idx + 1])) {
-        return parts[idx + 1];
-      }
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-/** Extract all video IDs from a pasted playlist URL list — best effort. */
-export function extractIdsFromText(text: string): string[] {
-  const ids = new Set<string>();
-  const single = parseVideoId(text);
-  if (single) ids.add(single);
-  // find v=... occurrences
-  const re = /[?&]v=([A-Za-z0-9_-]{11})/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(text)) !== null) ids.add(m[1]);
-  return [...ids];
-}
-
 export function youtubeWatchUrl(videoId: string): string {
   return `https://www.youtube.com/watch?v=${videoId}`;
 }

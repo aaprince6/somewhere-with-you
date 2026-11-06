@@ -118,7 +118,7 @@ export const PLAYLIST: Track[] = [
   },
   {
     id: "yt-50AtHFmgLUc",
-    title: "Zara Zara Bahekta Hai",
+    title: "Zara Zara Bahekta Hai | JalRaj | RHTDM | Male Version | | Latest Cover 2021 Hindi",
     artist: "JalRaj",
     src: "/audio/track-013.mp3",
     youtubeId: "50AtHFmgLUc",
